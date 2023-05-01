@@ -1,6 +1,7 @@
-import pygame
-import random
 import math
+import random
+
+import pygame
 
 
 def get_angle_by_catan(a, b):
@@ -25,7 +26,7 @@ class Game():
 
     pygame.init()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_caption("Shoot!")
+    pygame.display.set_caption('Shoot!')
 
     bg_surf = pygame.image.load('images/bg.png').convert_alpha()
     bg_surf = pygame.transform.scale(bg_surf, (WIDTH, HEIGHT))
@@ -155,13 +156,13 @@ class Player(pygame.sprite.Sprite):
         my_game.bullets.add(bullet)
         if self.triple:
             bullet = Ally_bullet(self.posx,
-                            self.posy,
-                            Speed.get_rotate_speed(self.angle - 15, 10))
+                                 self.posy,
+                                 Speed.get_rotate_speed(self.angle - 15, 10))
             my_game.all_sprites.add(bullet)
             my_game.bullets.add(bullet)
             bullet = Ally_bullet(self.posx,
-                            self.posy,
-                            Speed.get_rotate_speed(self.angle + 15, 10))
+                                 self.posy,
+                                 Speed.get_rotate_speed(self.angle + 15, 10))
             my_game.all_sprites.add(bullet)
             my_game.bullets.add(bullet)
 
@@ -180,7 +181,9 @@ class Power_up(pygame.sprite.Sprite):
     def update(self):
         self.rect.x += self.speedx
         self.rect.y += self.speedy
-        if self.rect.top > my_game.HEIGHT + 10 or self.rect.left < -25 or self.rect.right > my_game.WIDTH + 20:
+        if (self.rect.top > my_game.HEIGHT + 10 or
+                self.rect.left < -25 or
+                self.rect.right > my_game.WIDTH + 20):
             self.rect.x = random.randrange(0, my_game.WIDTH - self.rect.width)
             self.rect.y = random.randrange(-100, -40)
             self.speedy = random.randrange(3, 5)
@@ -218,7 +221,9 @@ class Mob(Enemy):
 
     def update(self):
         super().update()
-        if self.rect.top > my_game.HEIGHT + 10 or self.rect.left < -25 or self.rect.right > my_game.WIDTH + 20:
+        if (self.rect.top > my_game.HEIGHT + 10 or
+                self.rect.left < -25 or
+                self.rect.right > my_game.WIDTH + 20):
             self.rect.x = random.randrange(my_game.WIDTH - self.rect.width)
             self.rect.y = random.randrange(-100, -40)
             self.speedy = random.randrange(3, 5)
@@ -256,7 +261,10 @@ class Boss(Enemy):
             self.speedx *= -1
 
     def shoot(self):
-        enumy_bullet = Enemy_bullet(self.rect.centerx, self.rect.top, Speed(10, 10))
+        enumy_bullet = Enemy_bullet(
+            self.rect.centerx,
+            self.rect.top,
+            Speed(10, 10))
         my_game.all_sprites.add(enumy_bullet)
         my_game.enumy_bullets.add(enumy_bullet)
         enumy_bullet = Enemy_bullet(
@@ -304,7 +312,7 @@ class Enemy_bullet(Bullet):
 my_game = Game()
 my_game.start_init()
 
-for i in range(3):
+for _ in range(3):
     Heavy_mob()
     Light_mob()
     Medium_mob()
@@ -360,12 +368,12 @@ while game:
         False,
         True)
     for enemy in hits:
-        print(f'У боса осталось {enemy.life} здоровья')
+        print(f'У босса осталось {enemy.life} здоровья')
         enemy.life -= player.demage
         if enemy.life <= 0:
             enemy.kill()
             score += 1000
-            text = font.render("score: " + str(score), 1, (10, 10, 10))
+            text = font.render('score: ' + str(score), 1, (10, 10, 10))
             my_game.TIME_TO_SHOOT = False
 
     hits = pygame.sprite.groupcollide(
@@ -380,7 +388,10 @@ while game:
                 pygame.time.set_timer(my_game.TIME_TO_DMG, 5000, loops=1)
                 print('Усиление сработало')
             elif power_up.name == 'extra_bullets':
-                pygame.time.set_timer(my_game.TIME_TO_EXTRA_BULLET, 5000, loops=1)
+                pygame.time.set_timer(
+                    my_game.TIME_TO_EXTRA_BULLET,
+                    5000,
+                    loops=1)
                 player.triple = True
 
     hits = pygame.sprite.spritecollide(player, my_game.mobs, False)
