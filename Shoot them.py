@@ -1,7 +1,26 @@
+import pygame
+
 import math
 import random
+import sqlite3 as sq
 
-import pygame
+
+user_name = input('Enter your name: ')
+
+
+def update_score_db(name, user_score):
+    '''Создание нового пользователя или обновление очков в БД'''
+    with sq.connect('st.db') as con:
+        cur = con.cursor()
+        cur.execute(f'SELECT name FROM users WHERE name LIKE "{name}"')
+        if cur.fetchone() is None:
+            cur.execute(f'INSERT INTO users VALUES ("{name}", "{user_score}")')
+        else:
+            cur.execute(f'SELECT score FROM users WHERE name LIKE "{name}"')
+            score_in_db = cur.fetchone()[0]
+            if int(score_in_db) < score:
+                cur.execute(f'UPDATE users SET score = \
+                    {str(user_score)} WHERE name LIKE "{name}"')
 
 
 def get_angle_by_catan(a, b):
@@ -69,7 +88,7 @@ class Game():
 
         score = 0
         font = pygame.font.Font(None, 32)
-        text = font.render("Набрано очков: " + str(score), 1, (10, 10, 10))
+        text = font.render('Набрано очков: ' + str(score), 1, (10, 10, 10))
         textpos = text.get_rect(centerx=my_game.WIDTH-120, bottom=42)
 
 
@@ -323,6 +342,7 @@ game = True
 
 while game:
     if score >= 1000:
+        update_score_db(user_name, score)
         game = False
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -359,7 +379,7 @@ while game:
         if mob.life <= 0:
             mob.kill()
             score += 1
-            text = font.render("score: " + str(score), 1, (10, 10, 10))
+            text = font.render('score: ' + str(score), 1, (10, 10, 10))
             random.choice([Heavy_mob, Medium_mob, Light_mob])()
 
     hits = pygame.sprite.groupcollide(
@@ -396,10 +416,12 @@ while game:
 
     hits = pygame.sprite.spritecollide(player, my_game.mobs, False)
     if hits:
+        update_score_db(user_name, score)
         break
 
     hits = pygame.sprite.spritecollide(player, my_game.enumy_bullets, False)
     if hits:
+        update_score_db(user_name, score)
         break
 
     my_game.screen.fill(my_game.BLACK)
